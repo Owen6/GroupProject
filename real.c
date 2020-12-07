@@ -1,5 +1,4 @@
 
-
 #include "DHT.h"
 #include <LiquidCrystal.h>
 #include <Servo.h>
@@ -34,6 +33,7 @@ int level;
 float waterThresh = 100;
 float tempThresh = 73;
 char val;
+int button = 0;
 
 //------------
 // States - 0 Disabled - 1 Idle - 2 Running - 3 Error 
@@ -41,6 +41,7 @@ char val;
 void lcdDisplay(float hum, float temp, int error);
 void ledState(int state);
 void vent(char var);
+void buttonState();
 
 void setup() {
   lcd.begin(16, 2);       // set up the LCD's number of columns and rows:
@@ -62,6 +63,8 @@ void setup() {
   *portH &= 0x9F;
   //sets PH5 to high
   *portH |= 0x20;
+   // sets pullup resistor for PH4
+  *portH |= 0x10;
 
    // set PE4 to output            //Register E
   *portDDRE |= 0x10;
@@ -77,6 +80,9 @@ void setup() {
 void loop(){
   delay(2000);
   //Update Variables
+
+      buttonState();
+    
   float h = dht.readHumidity();
   float f = dht.readTemperature(true);
   //Temp variables until we get the water sensor working
@@ -133,12 +139,12 @@ void loop(){
   }
 
   //Temporary Console print for testing purposes
-  Serial.print("Humidity: "); 
+  /*Serial.print("Humidity: "); 
   Serial.print(h);
   Serial.print(" %\t");
   Serial.print(f);
   Serial.println(" *F");
-  Serial.println(level);
+  Serial.println(level);*/
 }
 
 void lcdDisplay(float hum, float temp, int error){
@@ -199,3 +205,25 @@ void vent(char var){
       break;
   }
 }
+
+void buttonState(){
+  Serial.println(button);
+  if(!(*pinH & 0b00010000)){
+    Serial.println("p");
+    for(volatile unsigned int i = 0; i<100;i++);
+     Serial.println("lop");
+    if(!(*pinH & 0b00010000)){
+       Serial.println("sup");
+      while(!(*pinH & 0b00010000));
+       Serial.println(button);
+       if(button == 0){
+        button = 1;
+        state = 1;
+        
+       }     
+       else{
+        button = 0;
+        state = 0;
+       }
+    }
+  }
