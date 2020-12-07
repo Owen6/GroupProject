@@ -1,0 +1,26 @@
+Owen--
+State checking for system
+Building the System
+Document Overview
+Go through and check kits
+LCD Screen
+7Am Wednesday
+
+Branden--
+Reaction of states
+Building the System
+
+Thurs 6:00
+
+
+Functions:
+
+temp control 
+water level 
+lcd Screen
+on/off button
+vent control
+time and control
+start fan 
+IDLE state 
+
