@@ -1,4 +1,3 @@
-
 #include "DHT.h"
 #include <LiquidCrystal.h>
 #include <Servo.h>
@@ -26,9 +25,10 @@ DHT dht(DHTPIN, DHTTYPE);
 Servo myservo;
 
 //set state to start disabled
-int state = 1;
+int state = 0;
 int wPin = A0;
 int level;
+
 //Set Variables
 float waterThresh = 100;
 float tempThresh = 73;
@@ -74,6 +74,11 @@ void setup() {
   *portE &= 0xDF;  // 0b1101 1111
   //initialize water sensor power to PE4
   *portE |= 0x10;  // 0b0001 0000
+
+ 
+  *portH &= 0xDF;            //Turn temp sensor            // for starting in disabled mode
+  *portE &= 0xEF;            //turn off water sensor
+  *portE &= 0xDF;            //turn off motor
   
 }
 
@@ -139,12 +144,12 @@ void loop(){
   }
 
   //Temporary Console print for testing purposes
-  /*Serial.print("Humidity: "); 
+  Serial.print("Humidity: "); 
   Serial.print(h);
   Serial.print(" %\t");
   Serial.print(f);
   Serial.println(" *F");
-  Serial.println(level);*/
+  Serial.println(level);
 }
 
 void lcdDisplay(float hum, float temp, int error){
@@ -215,15 +220,20 @@ void buttonState(){
     if(!(*pinH & 0b00010000)){
        Serial.println("sup");
       while(!(*pinH & 0b00010000));
-       Serial.println(button);
        if(button == 0){
         button = 1;
         state = 1;
-        
+        *portH |= 0x20;            //turn on temp
+        *portE |= 0x10;            //turn on water sensor
        }     
        else{
         button = 0;
         state = 0;
+        *portH &= 0xDF;            //Turn temp sensor
+        *portE &= 0xEF;            //turn off water sensor
+        *portE &= 0xDF;            //turn off motor
        }
     }
   }
+  
+}
